@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import axios from "../lib/axios";
 
-function Form({ setItems }) {
+function Form({ setTodos }) {
   const [task, setTask] = useState("");
 
-  function handleClick(e) {
+  async function handleClick(e) {
     e.preventDefault();
-    const data = {
-      task,
-    };
-    setItems((prev) => [...prev, data]);
-    setTask("");
+    try {
+      const res = await axios.post("/", { task });
+      setTodos((prev) => [...prev, res.data]);
+      setTask("");
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   }
   return (
     <form className="flex gap-4  items-center">

@@ -19,8 +19,32 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
+const todoSchema = new mongoose.Schema({
+  task: String,
+  isCompleted: Boolean,
+});
+
+const Todo = mongoose.model("Todo", todoSchema);
+
 app.use(cors(corsOptions));
 app.use(express.json());
+
+app.get("/", async (req, res) => {
+  const todos = await Todo.find();
+  res.json(todos);
+});
+app.post("/", async (req, res) => {
+  const newTodo = await Todo.create({
+    task: req.body.task,
+    isCompleted: false,
+  });
+  res.json(newTodo);
+});
+
+app.delete("/:id", async (req, res) => {
+  await Todo.findByIdAndDelete(req.params.id);
+  res.json({ message: "Task deleted." });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}...`);
